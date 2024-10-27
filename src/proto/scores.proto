@@ -1,0 +1,26 @@
+syntax="proto3";
+
+package scores;
+
+service ScoresService {
+    rpc GetUsersRankingByGame(GetUsersRankingRequest) returns (GetUsersRankingResponse);
+}
+
+message GetUsersRankingRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string game = 3;
+}
+
+message UserBestScore {
+    int64 score = 1;
+    string userId = 2;
+}
+
+message UsersScoreRanking {
+    repeated UserBestScore data = 1;
+    int32 limit = 2;
+    int32 page = 3;
+    int32 totalCount = 4;
+    int32 totalPages = 5;
+}
