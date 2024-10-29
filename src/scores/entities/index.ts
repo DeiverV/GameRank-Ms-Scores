@@ -1,1 +1,1 @@
-export * from './score.entity'
+export * from './score.entity';

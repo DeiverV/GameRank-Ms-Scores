@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { Score } from './entities';
+import { Score as ScoreEntity } from './entities';
 import { faker } from '@faker-js/faker';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateScoreDto, GetUserScoresDto, GetUsersRankingDto } from './dto';
 import { PaginatorDto } from 'src/common/dto/pagination.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Score } from './schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class ScoresService {
-  private scores: Score[] = [];
+  private scores: ScoreEntity[] = [];
 
-  constructor() {
+  constructor(@InjectModel(Score.name) private scoreModel: Model<Score>) {
     this.generateMockData();
   }
 
@@ -29,7 +32,7 @@ export class ScoresService {
     userId,
     limit,
     page,
-  }: GetUserScoresDto): PaginatorDto<Score> {
+  }: GetUserScoresDto): PaginatorDto<ScoreEntity> {
     const userScores = this.scores.filter((score) => score.userId === userId);
     const filteredScores = userScores.slice(page * limit - limit, page * limit);
 
