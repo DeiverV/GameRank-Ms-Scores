@@ -45,18 +45,17 @@ export class ScoresService {
     };
   }
 
-  createScore(userId: string, createScoreDto: CreateScoreDto) {
+  createScore(createScoreDto: CreateScoreDto) {
     this.scores.push({
       id: uuidv4(),
       createdAt: faker.date.anytime().toUTCString(),
-      userId,
       ...createScoreDto,
     });
   }
 
-  getGames(): string[] {
+  getGames(): { games: string[] } {
     const games = Array.from(new Set(this.scores.map((score) => score.game)));
-    return games;
+    return { games };
   }
 
   getUsersRankingByGame({

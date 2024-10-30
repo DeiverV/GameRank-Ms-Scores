@@ -4,6 +4,42 @@ package scores;
 
 service ScoresService {
     rpc GetUsersRankingByGame(GetUsersRankingRequest) returns (GetUsersRankingResponse);
+    rpc GetUserScores(GetUserScoresDto) returns (UserScores);
+    rpc GetGames(Empty) returns (Games);
+    rpc CreateScore(CreateScoreDto) returns (Empty);
+    rpc DeleteScore(ScoreId) returns (Empty);
+}
+
+message GetUserScoresDto {
+    int32 page = 1;
+    int32 limit = 2;
+    string userId = 3;
+}
+
+message CreateScoreDto {
+    string userId = 1;
+    number score = 2;
+    string game = 3;
+}
+
+message Games {
+    repeated string games = 1;
+}
+
+message UserScores {
+    repeated Score data = 1;
+    int32 limit = 2;
+    int32 page = 3;
+    int32 totalCount = 4;
+    int32 totalPages = 5;
+}
+
+message ScoreId {
+    string scoreId = 1;
+}
+
+message UserId {
+    string userId = 1;
 }
 
 message GetUsersRankingRequest {
@@ -24,3 +60,13 @@ message UsersScoreRanking {
     int32 totalCount = 4;
     int32 totalPages = 5;
 }
+
+message Score {
+    string id = 1;
+    number score = 2;
+    string game = 3;
+    string userId = 4;
+    string createdAt = 5;
+}
+
+message Empty {}

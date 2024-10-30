@@ -14,28 +14,23 @@ export class ScoresController {
     return this.scoresService.getUsersRankingByGame(data);
   }
 
-  //-----------REST Communication
-
-  @Get(':userId')
-  getUserScores(@Query() getUserScoresDto: GetUserScoresDto) {
+  @GrpcMethod('ScoresService', 'GetUserScores')
+  getUserScores(getUserScoresDto: GetUserScoresDto) {
     return this.scoresService.getUserScores(getUserScoresDto);
   }
 
-  @Get('games')
+  @GrpcMethod('ScoresService', 'GetGames')
   getGames() {
     return this.scoresService.getGames();
   }
 
-  @Post(':userId')
-  createScore(
-    @Query() { userId }: { userId: string },
-    @Body() createScoreDto: CreateScoreDto,
-  ) {
-    return this.scoresService.createScore(userId, createScoreDto);
+  @GrpcMethod('ScoresService', 'CreateScore')
+  createScore(createScoreDto: CreateScoreDto) {
+    return this.scoresService.createScore(createScoreDto);
   }
 
-  @Delete(':scoreId')
-  deleteScore(@Query() { scoreId }: { scoreId: string }) {
+  @GrpcMethod('ScoresService', 'DeleteScore')
+  deleteScore({ scoreId }: { scoreId: string }) {
     return this.scoresService.deleteScore({ scoreId });
   }
 }
