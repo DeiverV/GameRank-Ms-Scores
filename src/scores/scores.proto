@@ -3,7 +3,7 @@ syntax="proto3";
 package scores;
 
 service ScoresService {
-    rpc GetUsersRankingByGame(GetUsersRankingRequest) returns (GetUsersRankingResponse);
+    rpc GetUsersRankingByGame(GetUsersRankingRequest) returns (UsersScoreRanking);
     rpc GetUserScores(GetUserScoresDto) returns (UserScores);
     rpc GetGames(Empty) returns (Games);
     rpc CreateScore(CreateScoreDto) returns (Empty);
@@ -18,7 +18,7 @@ message GetUserScoresDto {
 
 message CreateScoreDto {
     string userId = 1;
-    number score = 2;
+    int32 score = 2;
     string game = 3;
 }
 
@@ -49,7 +49,7 @@ message GetUsersRankingRequest {
 }
 
 message UserBestScore {
-    int64 score = 1;
+    int32 score = 1;
     string userId = 2;
 }
 
@@ -63,7 +63,7 @@ message UsersScoreRanking {
 
 message Score {
     string id = 1;
-    number score = 2;
+    int32 score = 2;
     string game = 3;
     string userId = 4;
     string createdAt = 5;

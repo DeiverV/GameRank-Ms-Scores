@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { ScoresService } from './scores.service';
 import { GrpcMethod } from '@nestjs/microservices';
 import { CreateScoreDto, GetUserScoresDto, GetUsersRankingDto } from './dto';

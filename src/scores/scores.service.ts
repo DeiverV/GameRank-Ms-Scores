@@ -4,15 +4,16 @@ import { faker } from '@faker-js/faker';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateScoreDto, GetUserScoresDto, GetUsersRankingDto } from './dto';
 import { PaginatorDto } from 'src/common/dto/pagination.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Score } from './schema';
-import { Model } from 'mongoose';
+// import { InjectModel } from '@nestjs/mongoose';
+// import { Score } from './schema';
+// import { Model } from 'mongoose';
 
 @Injectable()
 export class ScoresService {
   private scores: ScoreEntity[] = [];
 
-  constructor(@InjectModel(Score.name) private scoreModel: Model<Score>) {
+  // @InjectModel(Score.name) private scoreModel: Model<Score>
+  constructor() {
     this.generateMockData();
   }
 
@@ -22,7 +23,7 @@ export class ScoresService {
         id: uuidv4(),
         createdAt: faker.date.anytime().toUTCString(),
         game: faker.vehicle.model(),
-        score: faker.number.int(),
+        score: faker.number.int({ max: 100, min: 0 }),
         userId: uuidv4(),
       });
     }
@@ -76,8 +77,6 @@ export class ScoresService {
 
         return [...acc, score];
       }, []);
-
-    usersRanking.sort((a, b) => b.score - a.score);
 
     return {
       data: usersRanking.slice(page * limit - limit, page * limit),
