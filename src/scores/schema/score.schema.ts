@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { paginate } from 'mongoose-paginate-v2';
 import { v4 as uuidv4 } from 'uuid';
 
 @Schema()
@@ -18,3 +19,5 @@ export class Score extends Document {
 }
 
 export const ScoreSchema = SchemaFactory.createForClass(Score);
+
+ScoreSchema.plugin(paginate as any);

@@ -1,93 +1,91 @@
 import { Injectable } from '@nestjs/common';
 import { Score as ScoreEntity } from './entities';
-import { faker } from '@faker-js/faker';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateScoreDto, GetUserScoresDto, GetUsersRankingDto } from './dto';
 import { PaginatorDto } from 'src/common/dto/pagination.dto';
-// import { InjectModel } from '@nestjs/mongoose';
-// import { Score } from './schema';
-// import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Score } from './schema';
+import { PaginateModel } from 'mongoose';
 
 @Injectable()
 export class ScoresService {
-  private scores: ScoreEntity[] = [];
+  constructor(
+    @InjectModel(Score.name) private readonly scoreModel: PaginateModel<Score>,
+  ) {}
 
-  // @InjectModel(Score.name) private scoreModel: Model<Score>
-  constructor() {
-    this.generateMockData();
-  }
-
-  private generateMockData(): void {
-    for (let i = 0; i < 1000; i++) {
-      this.scores.push({
-        id: uuidv4(),
-        createdAt: faker.date.anytime().toUTCString(),
-        game: faker.vehicle.model(),
-        score: faker.number.int({ max: 100, min: 0 }),
-        userId: uuidv4(),
-      });
-    }
-  }
-
-  getUserScores({
+  async getUserScores({
     userId,
     limit,
     page,
-  }: GetUserScoresDto): PaginatorDto<ScoreEntity> {
-    const userScores = this.scores.filter((score) => score.userId === userId);
-    const filteredScores = userScores.slice(page * limit - limit, page * limit);
+  }: GetUserScoresDto): Promise<PaginatorDto<ScoreEntity>> {
+    const userScores = await this.scoreModel.paginate(
+      { userId },
+      { limit, page },
+    );
+    const formatted: ScoreEntity[] = userScores.docs.map((score) => ({
+      createdAt: score.createdAt.toISOString(),
+      game: score.game,
+      score: score.score,
+      userId: score.userId,
+      id: score._id as string,
+    }));
 
     return {
-      data: filteredScores,
-      limit,
-      page,
-      totalCount: userScores.length,
-      totalPages: Math.ceil(userScores.length / limit),
+      data: formatted,
+      limit: userScores.limit,
+      page: userScores.page,
+      totalCount: userScores.totalDocs,
+      totalPages: userScores.totalPages,
     };
   }
 
-  createScore(createScoreDto: CreateScoreDto) {
-    this.scores.push({
-      id: uuidv4(),
-      createdAt: faker.date.anytime().toUTCString(),
-      ...createScoreDto,
-    });
+  async createScore(createScoreDto: CreateScoreDto) {
+    await this.scoreModel.create(createScoreDto);
   }
 
-  getGames(): { games: string[] } {
-    const games = Array.from(new Set(this.scores.map((score) => score.game)));
+  async getGames(): Promise<{ games: string[] }> {
+    const games = await this.scoreModel.distinct('game');
     return { games };
   }
 
-  getUsersRankingByGame({
+  async getUsersRankingByGame({
     game,
     limit,
     page,
-  }: GetUsersRankingDto): PaginatorDto<{ score: number; userId: string }> {
-    const filteredScores = this.scores
-      .filter((score) => score.game === game)
-      .map((score) => ({ score: score.score, userId: score.userId }));
+  }: GetUsersRankingDto): Promise<
+    PaginatorDto<{ score: number; userId: string }>
+  > {
+    const res = await this.scoreModel.paginate(
+      { game },
+      { limit, page, sort: { score: 1 } },
+    );
 
-    const usersRanking: { score: number; userId: string }[] =
-      filteredScores.reduce((acc, score) => {
+    const formatted = res.docs.map((score) => ({
+      score: score.score,
+      userId: score.userId,
+    }));
+
+    const usersRanking: { score: number; userId: string }[] = formatted.reduce(
+      (acc, score) => {
         const user = acc.find((user) => user.userId === score.userId);
         if (user) {
           return acc;
         }
 
         return [...acc, score];
-      }, []);
+      },
+      [],
+    );
 
     return {
       data: usersRanking.slice(page * limit - limit, page * limit),
-      limit,
-      page,
-      totalCount: usersRanking.length,
-      totalPages: Math.ceil(usersRanking.length / limit),
+      limit: res.limit,
+      page: res.page,
+      totalCount: res.totalDocs,
+      totalPages: res.totalPages,
     };
   }
 
   deleteScore({ scoreId }: { scoreId: string }) {
-    this.scores = this.scores.filter((score) => score.id !== scoreId);
+    this.scoreModel.deleteOne({ _id: scoreId });
   }
 }
