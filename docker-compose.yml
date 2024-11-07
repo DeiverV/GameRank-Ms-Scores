@@ -1,14 +1,14 @@
 services:
   mongo:
-    image: mongo
+    image: mongo:latest
+    ports:
+      - '27017:27017'
     restart: always
     container_name: scoresdb
+    volumes:
+      - mongo_data:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
-    ports:
-      - '27017:27017'
-    volumes:
-      - data:/data
 volumes:
-  data:
+  mongo_data:

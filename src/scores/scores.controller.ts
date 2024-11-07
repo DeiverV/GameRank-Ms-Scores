@@ -10,27 +10,30 @@ export class ScoresController {
   //-----------gRPC Communication
 
   @GrpcMethod('ScoresService', 'GetUsersRankingByGame')
-  getUsersRankingByGame(data: GetUsersRankingDto) {
-    return this.scoresService.getUsersRankingByGame(data);
+  async getUsersRankingByGame(data: GetUsersRankingDto) {
+    const res = await this.scoresService.getUsersRankingByGame(data);
+    return res;
   }
 
   @GrpcMethod('ScoresService', 'GetUserScores')
-  getUserScores(getUserScoresDto: GetUserScoresDto) {
-    return this.scoresService.getUserScores(getUserScoresDto);
+  async getUserScores(getUserScoresDto: GetUserScoresDto) {
+    const res = await this.scoresService.getUserScores(getUserScoresDto);
+    return res;
   }
 
   @GrpcMethod('ScoresService', 'GetGames')
-  getGames() {
-    return this.scoresService.getGames();
+  async getGames() {
+    const res = await this.scoresService.getGames();
+    return res;
   }
 
   @GrpcMethod('ScoresService', 'CreateScore')
-  createScore(createScoreDto: CreateScoreDto) {
-    return this.scoresService.createScore(createScoreDto);
+  async createScore(createScoreDto: CreateScoreDto) {
+    await this.scoresService.createScore(createScoreDto);
   }
 
   @GrpcMethod('ScoresService', 'DeleteScore')
-  deleteScore({ scoreId }: { scoreId: string }) {
-    return this.scoresService.deleteScore({ scoreId });
+  async deleteScore({ scoreId }: { scoreId: string }) {
+    await this.scoresService.deleteScore({ scoreId });
   }
 }

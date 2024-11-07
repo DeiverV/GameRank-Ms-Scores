@@ -4,7 +4,7 @@ import { CreateScoreDto, GetUserScoresDto, GetUsersRankingDto } from './dto';
 import { PaginatorDto } from 'src/common/dto/pagination.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Score } from './schema';
-import { PaginateModel } from 'mongoose';
+import { DeleteResult, PaginateModel } from 'mongoose';
 
 @Injectable()
 export class ScoresService {
@@ -39,7 +39,7 @@ export class ScoresService {
   }
 
   async createScore(createScoreDto: CreateScoreDto) {
-    await this.scoreModel.create(createScoreDto);
+    return await this.scoreModel.create(createScoreDto);
   }
 
   async getGames(): Promise<{ games: string[] }> {
@@ -85,7 +85,7 @@ export class ScoresService {
     };
   }
 
-  deleteScore({ scoreId }: { scoreId: string }) {
-    this.scoreModel.deleteOne({ _id: scoreId });
+  async deleteScore({ scoreId }: { scoreId: string }): Promise<DeleteResult> {
+    return await this.scoreModel.deleteOne({ _id: scoreId });
   }
 }
